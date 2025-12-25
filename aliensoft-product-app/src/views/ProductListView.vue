@@ -90,4 +90,100 @@
       <div>
         Showing <span class="font-medium">{{ filteredProducts.length }}</span> of 
         <span class="font-medium">{{ store.products.length }}</span> products
-      </
+      </div>
+      <div class="flex space-x-2">
+        <button 
+          @click="loadProducts" 
+          :disabled="store.isLoading"
+          class="text-primary hover:text-blue-900 disabled:text-gray-400"
+        >
+          Refresh
+        </button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
+import { useProductsStore } from '@/stores/products.store'
+import ProductTable from '@/components/ProductTable.vue'
+import AppSpinner from '@/components/AppSpinner.vue'
+
+const router = useRouter()
+const store = useProductsStore()
+
+const searchQuery = ref('')
+const selectedCategory = ref('')
+
+const categories = computed(() => store.categories)
+
+const filteredProducts = computed(() => {
+  let filtered = [...store.products]
+  
+  // Filter by search query
+  if (searchQuery.value) {
+    const query = searchQuery.value.toLowerCase()
+    filtered = filtered.filter(product => 
+      product.title.toLowerCase().includes(query) ||
+      product.description.toLowerCase().includes(query)
+    )
+  }
+  
+  // Filter by category
+  if (selectedCategory.value) {
+    filtered = filtered.filter(product => 
+      product.category === selectedCategory.value
+    )
+  }
+  
+  return filtered
+})
+
+onMounted(async () => {
+  await loadProducts()
+})
+
+const loadProducts = async () => {
+  try {
+    await store.loadProducts()
+  } catch (error) {
+    console.error('Failed to load products:', error)
+  }
+}
+
+const loadCategories = async () => {
+  try {
+    await store.loadCategories()
+  } catch (error) {
+    console.error('Failed to load categories:', error)
+  }
+}
+
+const handleSearch = () => {
+  // Debounced search could be implemented here
+  // For now, we'll just use the computed filteredProducts
+}
+
+const handleCategoryFilter = () => {
+  // Filtering is handled by computed property
+}
+
+const viewProduct = (id) => {
+  router.push(`/products/${id}`)
+}
+
+const editProduct = (id) => {
+  // Navigate to edit page (could be implemented later)
+  router.push(`/products/${id}?edit=true`)
+}
+
+const formatCategory = (category) => {
+  if (!category) return ''
+  return category
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ')
+}
+</script>
