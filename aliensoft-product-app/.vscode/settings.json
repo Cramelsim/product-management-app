@@ -1,0 +1,24 @@
+{
+  "files.associations": {
+    "*.vue": "vue"
+  },
+  "emmet.includeLanguages": {
+    "vue": "html",
+    "vue-html": "html"
+  },
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": true
+  },
+  "vetur.format.enable": true,
+  "vetur.format.options.tabSize": 2,
+  "vetur.format.defaultFormatter.html": "prettier",
+  "vetur.format.defaultFormatter.js": "prettier",
+  "vetur.format.defaultFormatter.css": "prettier",
+  
+  // If using Volar instead:
+  "volar.autoCompleteRefs": true,
+  "volar.codeLens.pugTools": true,
+  "volar.codeLens.scriptSetupTools": true
+}
