@@ -181,6 +181,14 @@ const editProduct = (id) => {
 
 const formatCategory = (category) => {
   if (!category) return ''
+  
+  // Handle object format from API
+  if (typeof category === 'object') {
+    category = category.slug || category.name || ''
+  }
+  
+  if (typeof category !== 'string') return ''
+  
   return category
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))

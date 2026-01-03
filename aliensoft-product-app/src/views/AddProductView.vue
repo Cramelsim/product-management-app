@@ -62,19 +62,15 @@
                 <label for="category" class="block text-sm font-medium text-gray-700 mb-1">
                   Category <span class="text-red-500">*</span>
                 </label>
-                <select
-                  id="category"
-                  v-model="form.category"
-                  required
-                  class="input-field"
-                  :class="{ 'border-red-300': errors.category }"
-                >
-                  <option value="" disabled>Select a category</option>
-                  <option v-for="category in categories" :key="category" :value="category">
-                    {{ formatCategory(category) }}
-                  </option>
-                  <option value="other">Other</option>
-                </select>
+                <select v-model="form.category" required>
+    <option value="" disabled>Select a category</option>
+    <option v-for="category in categories" 
+            :key="category.slug || category" 
+            :value="category.slug || category">
+      {{ formatCategory(category) }}
+    </option>
+    <option value="other">Other</option>
+  </select>
                 <p v-if="errors.category" class="mt-1 text-sm text-red-600">{{ errors.category }}</p>
               </div>
 
@@ -367,7 +363,9 @@ const handleSubmit = async () => {
     const productData = {
       title: form.value.title,
       description: form.value.description || '',
-      category: form.value.category,
+      category: typeof form.value.category === 'string' 
+        ? form.value.category 
+        : form.value.category?.slug || form.value.category,
       price: parseFloat(form.value.price),
       stock: parseInt(form.value.stock),
       thumbnail: form.value.thumbnail || undefined,
@@ -422,7 +420,19 @@ const handleSubmit = async () => {
 
 const formatCategory = (category) => {
   if (!category) return ''
-  return category
+  
+  // Handle both formats: string or {slug, name}
+  let categoryStr = ''
+  
+  if (typeof category === 'string') {
+    categoryStr = category
+  } else if (category && typeof category === 'object') {
+    categoryStr = category.slug || category.name || ''
+  }
+  
+  if (!categoryStr) return ''
+  
+  return categoryStr
     .split('-')
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ')
